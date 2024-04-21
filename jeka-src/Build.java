@@ -1,5 +1,6 @@
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkProperties;
+import dev.jeka.core.tool.JkDoc;
 import dev.jeka.core.tool.KBean;
 import dev.jeka.core.tool.builtins.project.ProjectKBean;
 import dev.jeka.plugins.nodejs.JkNodeJs;
@@ -20,6 +21,7 @@ class Build extends KBean {
         // configure project instance here
     }
 
+    @JkDoc("Execute a Sonarqube scan on the NodeJs project")
     public void sonarJs() {
         JkSonarqube javaSonarqube = load(SonarqubeKBean.class).sonarqube;
         JkSonarqube jsSonarqube = javaSonarqube.copyWithoutProperties();
