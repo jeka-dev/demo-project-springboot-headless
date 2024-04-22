@@ -6,7 +6,10 @@ import java.util.stream.Stream;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 public class Application {
@@ -16,13 +19,14 @@ public class Application {
     }
 
     @Bean
-    CommandLineRunner init(UserRepository userRepository) {
+    CommandLineRunner init(UserRepository userRepository, ServletWebServerApplicationContext webServerAppCtxt) {
         return args -> {
             Stream.of("John", "Julie", "Jennifer", "Helen", "Rachel").forEach(name -> {
                 User user = new User(name, name.toLowerCase() + "@domain.com");
                 userRepository.save(user);
             });
             userRepository.findAll().forEach(System.out::println);
+            System.out.println("Open me at http://localhost:" + webServerAppCtxt.getWebServer().getPort() );
         };
     }
 }
