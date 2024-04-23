@@ -29,14 +29,15 @@ On second run, the app is directly executed, bypassing the build phase.
 
 ## Build application
 
-TYo build application, including Java and Angular tests, execute :
+To build application, including Java and Angular tests, execute :
 ```shell
 jeka project: pack
 ```
 This creates a bootable jar in *jeka-output* dir. 
 
 The bootable jar embeds the Angular application.
-Indeed, the `NodeJs` Kbean has configured to build Angular app alongside Springboot app (see [jeka.properties](jeka.properties)).
+This is due that the `NodeJs` Kbean is configured to build Angular app alongside Springboot app 
+(`@nodeJs.autoConfigureProject=true` in  [jeka.properties](jeka.properties)).
 
 ## Build application with sonar analysis + code coverage
 
