@@ -61,8 +61,8 @@ The meaning of *packQuality* and the tool versions are defined in [jeka.properti
 The Sonarqube analysis + coverage for Java code is provided out-of-the-box, thanks to *Jacoco* and *Sonarqube* Kbean, 
 that are activated in the command line.
 
-For ZAngular part, a specific method `sonarJs` has been implemented. 
-This method is invoked in the `::packQuality` shortcut.
+For Angular part, a specific method `sonarJs` has been implemented. 
+This method invoke is defined in the `::packQuality` shorthand.
 
 ## End-to-end testing
 
