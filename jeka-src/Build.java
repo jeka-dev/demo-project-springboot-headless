@@ -1,17 +1,23 @@
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkLog;
+import dev.jeka.core.api.testing.ApplicationTester;
 import dev.jeka.core.api.testing.JkTestProcessor;
 import dev.jeka.core.api.testing.JkTestSelection;
+import dev.jeka.core.api.tooling.docker.JkDocker;
+import dev.jeka.core.api.tooling.docker.JkDockerJvmBuild;
 import dev.jeka.core.api.utils.JkUtilsNet;
 import dev.jeka.core.tool.JkDoc;
 import dev.jeka.core.tool.KBean;
 import dev.jeka.core.tool.builtins.project.ProjectKBean;
+import dev.jeka.core.tool.builtins.tooling.docker.DockerKBean;
 import dev.jeka.plugins.sonarqube.JkSonarqube;
 import dev.jeka.plugins.sonarqube.SonarqubeKBean;
 
 class Build extends KBean {
 
     final JkProject project = load(ProjectKBean.class).project;
+
+    final DockerKBean dockerKBean = load(DockerKBean.class);
 
     static final String E2E_TEST_PATTERN = "^e2e\\..*";
 
@@ -22,6 +28,7 @@ class Build extends KBean {
     @Override
     protected void init() {
         project.testing.testSelection.addExcludePatterns(E2E_TEST_PATTERN); // exclude e2e from unit tests
+        dockerKBean.customize(this::customizeDockerImage);
     }
 
     @JkDoc("Execute a Sonarqube scan on the NodeJs project")
@@ -44,12 +51,38 @@ class Build extends KBean {
         jsSonarqube.run();
     }
 
-
+    @JkDoc("Execute E2E test on application deployed locally.")
     public void e2e() {
-        new AppTester().run();
+        new HostAppTester().run();
     }
 
-    private class AppTester extends ApplicationTester {
+    @JkDoc("Execute E2E test on application deployed in Docker.")
+    public void e2eDocker() {
+        new DockerTester().run();
+    }
+
+    private void customizeDockerImage(JkDockerJvmBuild dockerBuild) {
+        dockerBuild
+                .addAgent("io.opentelemetry.javaagent:opentelemetry-javaagent:1.32.0", "")
+                .setBaseImage("eclipse-temurin:21.0.1_12-jre-jammy");
+    }
+
+    private void execSelenideTests(String baseUrl) {
+        JkTestSelection selection =  project.testing.createDefaultTestSelection()
+                .addIncludePatterns(E2E_TEST_PATTERN);
+        JkTestProcessor testProcessor = project.testing.createDefaultTestProcessor().setForkingProcess(true);
+        testProcessor.getForkingProcess()
+                .setLogWithJekaDecorator(true)
+                .setLogCommand(true)
+                .addJavaOptions("-Dselenide.reportsFolder=jeka-output/test-report/selenide")
+                .addJavaOptions("-Dselenide.downloadsFolder=jeka-output/test-report/selenide-download")
+                .addJavaOptions("-Dselenide.headless=true")
+                .addJavaOptions("-Dselenide.baseUrl=" + baseUrl);
+        testProcessor.launch(project.testing.getTestClasspath(), selection).assertSuccess();
+    }
+
+    // Deploy application on Host, test it and undeploy
+    private class HostAppTester extends ApplicationTester {
 
         int port;
 
@@ -57,6 +90,7 @@ class Build extends KBean {
 
         @Override
         public void startApp() {
+            startTimeout = 30*1000;
             port = findFreePort();
             baseUrl = "http://localhost:" + port;
             project.prepareRunJar(JkProject.RuntimeDeps.EXCLUDE)
@@ -73,25 +107,55 @@ class Build extends KBean {
 
         @Override
         public void executeTests() {
-            JkTestSelection selection =  project.testing.createDefaultTestSelection()
-                    .addIncludePatterns(E2E_TEST_PATTERN);
-            JkTestProcessor testProcessor = project.testing.createDefaultTestProcessor().setForkingProcess(true);
-            testProcessor.getForkingProcess()
-                    .setLogWithJekaDecorator(true)
-                    .setLogCommand(true)
-                    .addJavaOptions("-Dselenide.reportsFolder=jeka-output/test-report/selenide")
-                    .addJavaOptions("-Dselenide.downloadsFolder=jeka-output/test-report/selenide-download")
-                    .addJavaOptions("-Dselenide.headless=true")
-                    .addJavaOptions("-Dselenide.baseUrl=" + baseUrl);
-            testProcessor.launch(project.testing.getTestClasspath(), selection).assertSuccess();
+            execSelenideTests(baseUrl);
         }
 
         @Override
-        public void stopApp() {
+        public void stopGracefully() {
             String shutdownUrl = baseUrl + "/actuator/shutdown";
             JkLog.info("Invoke %s", shutdownUrl);
             JkUtilsNet.sendHttpRequest(shutdownUrl, "POST", null).asserOk();
         }
+    }
+
+    // Deploy application on Docker, test it and undeploy
+    class DockerTester extends ApplicationTester {
+
+        int port;
+
+        String baseUrl;
+
+        String containerName;
+
+        @Override
+        protected void startApp() {
+            port = findFreePort();
+            baseUrl = "http://localhost:" + port;
+            containerName = project.getBaseDir().toAbsolutePath().getFileName().toString() + "-" + port;
+            JkDocker.prepareExec("run", "-d", "-p", String.format("%s:8080", port), "--name",
+                    containerName, dockerKBean.imageName)
+                    .setInheritIO(false)
+                    .setLogWithJekaDecorator(true)
+                    .exec();
+        }
+
+        @Override
+        protected boolean isApplicationReady() {
+            return JkUtilsNet.isAvailableAndOk(baseUrl, JkLog.isDebug());
+        }
+
+        @Override
+        protected void executeTests() {
+            execSelenideTests(baseUrl);
+        }
+
+        @Override
+        protected void stopGracefully() {
+            JkDocker.prepareExec("rm", "-f", containerName)
+                    .setInheritIO(false).setLogWithJekaDecorator(true)
+                    .exec();
+        }
+
     }
 
 }
