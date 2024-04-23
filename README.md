@@ -114,7 +114,7 @@ jeka e2eDocker
 This will :
 - launch the application in a container
 - Wait that the application is ready
-- Execute the e2e test suite against the
+- Execute the e2e test suite against the containerized app
 - Shutdown and remove the container
 
 This execution workflow is defined in `Build.e2eDocker()` method.
