@@ -68,7 +68,9 @@ class Build extends KBean {
     }
 
     private void execSelenideTests(String baseUrl) {
-        JkTestSelection selection =  project.testing.createDefaultTestSelection()
+        project.compilation.runIfNeeded();
+        project.testing.compilation.runIfNeeded();
+        JkTestSelection selection = project.testing.createDefaultTestSelection()
                 .addIncludePatterns(E2E_TEST_PATTERN);
         JkTestProcessor testProcessor = project.testing.createDefaultTestProcessor().setForkingProcess(true);
         testProcessor.getForkingProcess()

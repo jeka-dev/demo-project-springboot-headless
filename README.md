@@ -21,6 +21,12 @@ Tha application is usable at http://localhost:8080
 
 On second run, the app is directly executed, bypassing the build phase.
 
+> [!TIP]
+> You can start the application without needing to clone this Git repository.
+> 
+> Just execute `jeka -r https://github.com/jeka-dev/demo-project-springboot-angular.git -p`.
+
+
 ## Build application
 
 TYo build application, including Java and Angular tests, execute :
@@ -87,7 +93,8 @@ This execution workflow is defined in `e2e()` method from `Build` class in *jeka
 
 ### Testing with Docker
 
-This requires to have a docker client running (This can be Docker desktop running on your laptop).
+> [!NOTE]
+> This requires to have a Docker client running. This can be *DockerDesktop* running on your laptop.
 
 Make sure that the docker image is already built.
 ```shell
@@ -102,12 +109,12 @@ jeka docker: run
 ```
 
 ```shell
-jeka e2e
+jeka e2eDocker
 ```
 This will :
-- launch the application on local host
+- launch the application in a container
 - Wait that the application is ready
 - Execute the e2e test suite against the
-- Shutdown the application when test are finished
+- Shutdown and remove the container
 
-This execution workflow is defined in `e2e()` method from `Build` class in *jeka-src* dir.
+This execution workflow is defined in `Build.e2eDocker()` method.
