@@ -35,13 +35,15 @@ Indeed, the `NodeJs` Kbean has configured to build Angular app alongside Springb
 ## Build application with sonar analysis + code coverage
 
 > [!NOTE]
-> You need a sonarqube server to execute this. 
+> You need a sonarqube server to execute this.
+> 
 > By default, the server is expected to be found at *http://localhost:9000*.
-> You can launch a Sonarqube instance using docker `docker run -p 9000:9000 -d sonarqube:latest`
->    Go to http;//localhost:9000
->    login with 'admin/admin'
->    Go Administration > Security > User > Tokens > add ..
->    Copy the token and add a property 'sonar.token=[TOKEN]' in *[USER HOME]/.jeka/global.properties* file
+> 
+> You can launch a Sonarqube instance using docker `docker run -p 9000:9000 -d sonarqube:latest`. Then :
+>    - Go to http;//localhost:9000
+>    - login with 'admin/admin'
+>    - Go Administration > Security > User > Tokens > add ..
+>    - Copy the token and add a property 'sonar.token=[TOKEN]' in *[USER HOME]/.jeka/global.properties* file
 
 
 ```shell
