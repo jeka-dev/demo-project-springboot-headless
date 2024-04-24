@@ -11,6 +11,10 @@ This repo show-cases how to build a Springboot+Angular Application with JeKa. Th
 - End-to-end testing (using selenide) on application deployed on host
 - End-to-end testing (using selenide) on application deployed on Docker
 
+The application is a simple web app, managing a list of users;
+
+![screenshot.png](./screenshot.png)
+
 ## Run the application
 
 ```shell
