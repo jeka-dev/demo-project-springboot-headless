@@ -2,7 +2,7 @@ Tutorial https://www.baeldung.com/spring-boot-angular-web
 
 # JeKa Springboot-Angular application
 
-This repo show-cases how to build a Springboot+Angular Application with JeKa. The build involve :
+This repo show-cases how to build a Springboot+Angular Application with JeKa. The build involves :
 
 - Compilation + testing of the Java code
 - Compilation + testing of the Angular code
