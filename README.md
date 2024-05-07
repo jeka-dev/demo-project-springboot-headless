@@ -1,5 +1,3 @@
-Tutorial https://www.baeldung.com/spring-boot-angular-web
-
 # JeKa Springboot-Angular application
 
 This repo show-cases how to build a Springboot+Angular Application with JeKa. The build involves :
@@ -11,36 +9,44 @@ This repo show-cases how to build a Springboot+Angular Application with JeKa. Th
 - End-to-end testing (using selenide) on application deployed on host
 - End-to-end testing (using selenide) on application deployed on Docker
 
-The application is a simple web app, managing a list of users;
+The application is a simple web app, managing a list of users.
 
 ![screenshot.png](./screenshot.png)
 
+It has been copied from Tutorial https://www.baeldung.com/spring-boot-angular-web
+
 ## Run the application
+
+> [!NOTE]
+> Here, we assume that users clone the repository prior using JeKa commands.
+> Therefore, JeKa installation on host is not mandatory, as the repo includes shell scripts (*jeka* and *jeka.ps1*) at its root.
+
+Clone this repository, and execute the following command from the root dir :
 
 ```shell
 jeka -p
 ```
-This create a bootable jar if absent, then launch it.
+This creates a bootable jar if absent, then launch it.
 Tha application is usable at http://localhost:8080
 
 On second run, the app is directly executed, bypassing the build phase.
 
 > [!TIP]
-> You can start the application without needing to clone this Git repository.
+> If you want to start the application without cloning Git repository by yourself, just execute :
 > 
-> Just execute `jeka -r https://github.com/jeka-dev/demo-project-springboot-angular.git -p`.
+> `jeka -r https://github.com/jeka-dev/demo-project-springboot-angular.git -p`
 
 
 ## Build application
 
-To build application, including Java and Angular tests, execute :
+To build application, including both Java and Angular testing, execute :
 ```shell
 jeka project: pack
 ```
 This creates a bootable jar in *jeka-output* dir. 
 
 The bootable jar embeds the Angular application.
-This is due that the `NodeJs` Kbean is configured to build Angular app alongside Springboot app 
+This is because `NodeJs` Kbean is configured to build Angular app alongside Springboot app 
 (`@nodeJs.autoConfigureProject=true` in  [jeka.properties](jeka.properties)).
 
 ## Build application with sonar analysis + code coverage
@@ -60,7 +66,7 @@ This is due that the `NodeJs` Kbean is configured to build Angular app alongside
 ```shell
 jeka ::packQuality
 ```
-The meaning of *packQuality* and the tool versions are defined in [jeka.properties](jeka.properties))
+The meaning of *::packQuality* and the tool versions are defined in [jeka.properties](jeka.properties)
 
 The Sonarqube analysis + coverage for Java code is provided out-of-the-box, thanks to *Jacoco* and *Sonarqube* Kbean, 
 that are activated in the command line.
@@ -70,13 +76,13 @@ This method invoke is defined in the `::packQuality` shorthand.
 
 ## End-to-end testing
 
-Here the application is tested end-to-end using [selenide](https://https://selenide.org/).
+Here, the application is tested end-to-end using [selenide](https://https://selenide.org/).
 
-This allow to test the application by simulating user actions on the browser.
+This allows to test the application by simulating user actions on the browser.
 
 The test classes for e2e tests are located in *e2e* package from *test* dir.
 
-The tests are executed on deployed applications. This build include 2 scenarios :
+The tests are executed on deployed applications. This build includes 2 scenarios :
 
 - Testing the application deployed on local host
 - Testing the application deployed as docker container
