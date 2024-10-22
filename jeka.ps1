@@ -183,6 +183,9 @@ class CmdLineArgs {
 
   [array] GetPriorProgramArgs() {
     $index = $this.GetProgramArgIndex() - 1
+    if ($index -lt 0) {
+      return @()
+    }
     return $this.args[0..$index]
   }
 
@@ -258,13 +261,13 @@ class Props {
     }
 
     $jekaPropertyFilePath = $this.baseDir + '\jeka.properties'
-
     $value = [Props]::GetValueFromFile($jekaPropertyFilePath, $propName)
     if ('' -eq $value) {
       $parentDir = $this.baseDir + '\..'
       $parentJekaPropsFile = $parentDir + '\jeka.properties'
       if (Test-Path $parentJekaPropsFile) {
-        $value = $this.GetValueFromFile($parentJekaPropsFile, $propName)
+        $parentDirProps = [Props]::new($this.cmdLineArgs, $parentDir, $this.globalPropFile)
+        $value = $parentDirProps.GetValue($propName)
       } else {
         $value = [Props]::GetValueFromFile($this.globalPropFile, $propName)
       }
@@ -341,6 +344,7 @@ class Jdks {
   hidden Install([string]$distrib, [string]$version, [string]$targetDir) {
     MessageInfo "Downloading JDK $distrib $version. It may take a while..."
     $jdkurl="https://api.foojay.io/disco/v3.0/directuris?distro=$distrib&javafx_bundled=false&libc_type=c_std_lib&archive_type=zip&operating_system=windows&package_type=jdk&version=$version&architecture=x64&latest=available"
+    MessageVerbose "Downloading from $jdkUrl"
     $zipExtractor = [ZipExtractor]::new($jdkurl, $targetDir)
     $zipExtractor.ExtractRootContent()
   }
@@ -354,7 +358,7 @@ class Jdks {
   }
 
   hidden [string] JavaHome() {
-    if ($Env:JEKA_JAVA_HOME -ne $null) {
+    if ($null -ne $Env:JEKA_JAVA_HOME) {
       return $Env:JEKA_JAVA_HOME
     }
     $version = ($this.Props.GetValueOrDefault("jeka.java.version", "21"))
@@ -432,8 +436,12 @@ class ZipExtractor {
     Remove-Item -Path $tempDir
     Expand-Archive -Path $zipFile -DestinationPath $tempDir -Force
     $subDirs = Get-ChildItem -Path $tempDir -Directory
-    $root = $tempDir + "\" + $subDirs[0]
-    Move-Item -Path $root -Destination $this.dir -Force
+    $root = "$tempDir\$($subDirs[0])"
+    MessageVerbose "Copying downloaded JDK $root to $($this.dir)"
+    if (-not (Test-Path -Path $this.dir)) {
+      New-Item -ItemType Directory -Path $this.dir
+    }
+    Move-Item -Path "$root\*" -Destination $this.dir -Force
     Remove-Item -Path $zipFile
     Remove-Item -Path $tempDir -Recurse
   }
@@ -457,10 +465,9 @@ class ProgramExecutor {
   [string]$folder
   [array]$cmdLineArgs
 
-  ProgramExecutor([string]$folder, [string]$cmdLineArgs) {
+  ProgramExecutor([string]$folder, [array]$cmdLineArgs) {
     $this.folder = $folder
     $this.cmdLineArgs = $cmdLineArgs
-    $h = $this.folder
   }
 
   Exec([string]$javaCmd, [string]$progFile) {
@@ -473,7 +480,6 @@ class ProgramExecutor {
 
   [string] FindProg() {
     $dir = $this.folder
-    $exist = [System.IO.Directory]::Exists("$dir")
     if (-not (Test-Path $dir)) {
       return $null
     }
@@ -522,13 +528,13 @@ function ExecProg {
   $argLine = $cmdLineArgs -join ' '
   if ($progFile.EndsWith('.exe')) {
     Write-Verbose "Run native program $progFile with args $argLine"
-    & "$progFile" "$cmdLineArgs"
+    & "$progFile" $cmdLineArgs
   } else {
     $cmdLineArgs = [CmdLineArgs]::new($cmdLineArgs)
     $sypPropArgs = $cmdLineArgs.FilterInSysProp()
     $sanitizedProgArgs = $cmdLineArgs.FilterOutSysProp()
     Write-Verbose "Run Java program $progFile with args $argLine"
-    & "$javaCmd" -jar "$sypPropArgs" "$progFile" "$sanitizedProgArgs"
+    & "$javaCmd" -jar "$sypPropArgs" "$progFile" $sanitizedProgArgs
   }
 }
 
@@ -585,9 +591,9 @@ function Main {
     if (!$buildCmd) {
       $srcDir = $baseDir + "\src"
       if ([System.IO.Directory]::Exists($srcDir)) {
-        $buildCmd = "project: pack -Djeka.skip.tests=true"
+        $buildCmd = "project: pack -Djeka.skip.tests=true --stderr"
       } else {
-        $buildCmd = "base: pack -Djeka.skip.tests=true"
+        $buildCmd = "base: pack -Djeka.skip.tests=true --stderr"
       }
     }
     $buildArgs = [Props]::ParseCommandLine($buildCmd)

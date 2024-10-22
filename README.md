@@ -9,6 +9,8 @@ This repo show-cases how to build a Springboot+Angular Application with JeKa. Th
 - End-to-end testing (using selenide) on application deployed on host
 - End-to-end testing (using selenide) on application deployed on Docker
 
+Additionally this demo showcases [how to create Docker native images](#Docker-Image).
+
 The application is a simple web app, managing a list of users.
 
 ![screenshot.png](./screenshot.png)
@@ -97,7 +99,7 @@ jeka e2e
 This will :
 - launch the application on local host
 - Wait that the application is ready
-- Execute the e2e test suite against the 
+- Execute the e2e test suite against the locally deployed application
 - Shutdown the application when test are finished
 
 This execution workflow is defined in `e2e()` method from `Build` class in *jeka-src* dir.
@@ -116,7 +118,7 @@ he specific setup of the image is defined in `Build#customizeDockerImage` method
 
 You can execute directly the image by executing:
 ```shell
-jeka docker: run
+docker run --rm -p 8080:8080 demo-project-springboot-angular:latest
 ```
 
 ```shell
@@ -129,3 +131,59 @@ This will :
 - Shutdown and remove the container
 
 This execution workflow is defined in `Build.e2eDocker()` method.
+
+## Create native executable and Docker native image
+
+Compile the Spring-Boot project in a native executable:
+```shell
+jeka native: compile
+```
+The *springboot KBean* (declared in *jeka.properties*) instructs the *native KBean* to include a Spring AOT enrichment phase prior executing *native-image*.
+Thus, no additional configuration is needed.
+
+### Docker Image
+
+With Jeka, you can easily create Docker native images, regardless of whether you're running on Windows, Linux, or macOS.
+
+To create a Docker image, run: 
+```shell
+jeka docker: buildNative
+```
+
+By default, the native image is based on Ubuntu. 
+
+We can generate a smaller image, based on a minimal distroless image, but we need to
+compile by statically linking *libc*, as it is not included in that image.
+
+```shell
+jeka native: staticLink=MUSL docker: nativeBaseImage=gcr.io/distroless/static-debian12:nonroot buildNative
+```
+
+To see details of the generated image, use `docker: infoNative` command, as :
+```shell
+jeka docker: nativeBaseImage=gcr.io/distroless/static-debian12:nonroot infoNative
+```
+
+You can also inspect the generated (Docker build dir)[jeka-output/docker-build-native-demo-project-springboot-angular#latest]
+
+To shorten command line, some parameters can be mentioned in *jeka.properties* file.
+```properties
+@native.staticLink=MUSL
+@docker.nativeBaseImage=gcr.io/distroless/static-debian12:nonroot
+@springboot.aotProfiles=my-profile-a,my-profile-b
+```
+
+The generated Dockerbuild file can be customized using code following in the init method of your KBean :
+
+```java
+@Override
+public void init() {
+    ...
+    load(DockerKBean.class).customizeNativeImage(steps -> steps
+            .addCopy(aFile, "/etc/myconfig")
+            .add("RUN ..."))
+    ;
+}
+```
+
+

@@ -13,6 +13,8 @@ import dev.jeka.core.tool.builtins.tooling.docker.DockerKBean;
 import dev.jeka.plugins.sonarqube.JkSonarqube;
 import dev.jeka.plugins.sonarqube.SonarqubeKBean;
 
+import java.nio.file.Files;
+
 class Build extends KBean {
 
     final JkProject project = load(ProjectKBean.class).project;
@@ -28,7 +30,7 @@ class Build extends KBean {
     @Override
     protected void init() {
         project.testing.testSelection.addExcludePatterns(E2E_TEST_PATTERN); // exclude e2e from unit tests
-        dockerKBean.customize(this::customizeDockerImage);
+        dockerKBean.customizeJvmImage(this::customizeDockerImage);
     }
 
     @JkDoc("Execute a Sonarqube scan on the NodeJs project")
@@ -68,8 +70,9 @@ class Build extends KBean {
     }
 
     private void execSelenideTests(String baseUrl) {
-        project.compilation.runIfNeeded();
-        project.testing.compilation.runIfNeeded();
+        if (!Files.exists(project.testing.compilation.layout.resolveClassDir())) {
+            project.testing.compilation.run();
+        }
         JkTestSelection selection = project.testing.createDefaultTestSelection()
                 .addIncludePatterns(E2E_TEST_PATTERN);
         JkTestProcessor testProcessor = project.testing.createDefaultTestProcessor().setForkingProcess(true);
@@ -98,7 +101,7 @@ class Build extends KBean {
             project.prepareRunJar(JkProject.RuntimeDeps.EXCLUDE)
                     .addJavaOptions("-Dserver.port=" + port)
                     .addJavaOptions("-Dmanagement.endpoint.shutdown.enabled=true")
-                    .setInheritIO(false)
+                    .setInheritIO(true)
                     .execAsync();
         }
 
@@ -135,7 +138,7 @@ class Build extends KBean {
             baseUrl = "http://localhost:" + port;
             containerName = project.getBaseDir().toAbsolutePath().getFileName().toString() + "-" + port;
             JkDocker.prepareExec("run", "-d", "-p", String.format("%s:8080", port), "--name",
-                    containerName, dockerKBean.imageName)
+                    containerName, dockerKBean.jvmImageName)
                     .setInheritIO(false)
                     .setLogWithJekaDecorator(true)
                     .exec();
