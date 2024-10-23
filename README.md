@@ -15,7 +15,7 @@ Once the application has started, you can query the service at:  http://localhos
 
 It has been copied from the tutorial [Spring Boot and Angular Web](https://www.baeldung.com/spring-boot-angular-web).
 
-## Build the application
+## Build the Application
 
 To build application including testing, execute :
 ```shell
@@ -34,7 +34,7 @@ jeka -p
 ```
 The last command runs the first executable or jar file found under *jeka-output* dir.
 
-## Create JVM Docker image
+## Create JVM Docker Images
 
 Create a Docker image running the Java application:
 ```shell
@@ -47,7 +47,7 @@ Run the image:
 docker run --rm -p 8080:8080 demo-project-springboot-headless:latest
 ```
 
-## Create native images
+## Create Native Images
 
 Create an executable file under *jeka-output* dir:
 ```shell
@@ -60,7 +60,7 @@ jeka -p
 ```
 Fine ! We created a native Spring-Boot application without the need to install or configure anything on the host machine.
 
-## Create Docker image running the native executable
+## Create Docker Images running the Native Executable
 
 Now, let's create a Docker image of the native application:
 ```shell
@@ -78,7 +78,7 @@ or by executing:
 jeka docker: infoNative
 ```
 
-## Configure the native image
+## Configure Native Images
 
 By default, the native image is based on Ubuntu and uses statically linked libc.
 
