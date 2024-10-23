@@ -9,7 +9,7 @@ The project follows the standard structure:
 - Java dependencies are declared in [dependencies.txt](./dependencies.txt).
 - The build is configured in [jeka.properties](./jeka.properties) (no code is needed here).
 
-The application serves a simple REST API for managing a list of users.
+The application serves a simple REST API for managing a list of users, backed by an in-memory database.
 
 Once the application has started, you can query the service at:  http://localhost:8080/users
 
@@ -58,7 +58,7 @@ Run it:
 ```shell
 jeka -p
 ```
-Yippee! Without installing or configuring anything on the host machine, we managed to create a native Spring Boot application.
+Fine ! We successfully created a native Spring-Boot application without the need to install or configure anything on the host machine.
 
 ## Create Docker image running the native executable
 
