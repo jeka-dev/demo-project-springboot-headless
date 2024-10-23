@@ -5,23 +5,20 @@
 ##
 
 == COMPILE ==
-org.springframework.boot:spring-boot-dependencies::pom:3.2.4
+org.springframework.boot:spring-boot-dependencies::pom:3.3.4
 org.springframework.boot:spring-boot-starter-web
 org.springframework.boot:spring-boot-starter-data-jpa
 org.springframework.boot:spring-boot-starter-validation
-org.springframework.boot:spring-boot-starter-actuator
-com.h2database:h2
-
 org.projectlombok:lombok:1.18.32
 
 == RUNTIME ==
-
-
+org.springframework.boot:spring-boot-starter-actuator
+com.h2database:h2
 -org.projectlombok:lombok
 
 == TEST ==
 org.springframework.boot:spring-boot-starter-test
-com.codeborne:selenide:7.2.3
+
 
 
 
