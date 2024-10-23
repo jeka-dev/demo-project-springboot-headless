@@ -68,10 +68,10 @@ jeka docker: buildNative
 ```
 Execute the native Docker image:
 ```shell
-docker run --rm -p 8080:8080 demo-project-springboot-headless:latest
+docker run --rm -p 8080:8080 native-demo-project-springboot-headless:latest
 ```
 So nice ! We have effortlessly created a Docker image running the Spring Boot native application.
-More importantly, we did that from our the host machine, without needing to run the entire 
+More importantly, we did that from the host machine, without needing to run the entire 
 build from a specific container :-)
 
 We can inspect the generated image by visiting [Docker build dir](./jeka-output/docker-build-native-demo-project-springboot-headless#latest), 
