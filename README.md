@@ -2,7 +2,7 @@
 
 This repository showcases how to:
 - Build a Spring Boot application.
-- Create native Docker images running this application.
+- Effortlessly create different flavors of native Spring Boot Docker images (Ubuntu, distroless).
 
 The project follows the standard structure:
 - Code is organized in the *Maven* layout (*src/main/java, ...*).
@@ -58,7 +58,7 @@ Run it:
 ```shell
 jeka -p
 ```
-Fine ! We successfully created a native Spring-Boot application without the need to install or configure anything on the host machine.
+Fine ! We created a native Spring-Boot application without the need to install or configure anything on the host machine.
 
 ## Create Docker image running the native executable
 
@@ -70,9 +70,7 @@ Execute the native Docker image:
 ```shell
 docker run --rm -p 8080:8080 native-demo-project-springboot-headless:latest
 ```
-So nice ! We have effortlessly created a Docker image running the Spring Boot native application.
-More importantly, we did that from the host machine, without needing to run the entire 
-build from a specific container :-)
+We have created a Docker image running the Spring Boot native application.
 
 We can inspect the generated image by visiting [Docker build dir](./jeka-output/docker-build-native-demo-project-springboot-headless#latest), 
 or by executing:
