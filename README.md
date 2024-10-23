@@ -1,4 +1,4 @@
-# JeKa Spring-Boot application
+# Native Spring-Boot Applications with JeKa
 
 This repository showcases how to:
 - Build a Spring Boot application.
