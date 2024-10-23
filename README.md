@@ -60,7 +60,7 @@ jeka -p
 ```
 Fine ! We created a native Spring-Boot application without the need to install or configure anything on the host machine.
 
-## Create Docker Images running the Native Executable
+## Create Native Docker Images
 
 Now, let's create a Docker image of the native application:
 ```shell
