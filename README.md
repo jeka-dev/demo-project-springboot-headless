@@ -1,7 +1,8 @@
 # Native Spring-Boot Applications with JeKa
 
-This repository showcases how [JeKa](https://jeka.dev) can create native Docker images effortlessly, from a Spring Boot application. 
-We'll also detail how to create a *distrolless* image for running your native application.
+This repository showcases how [JeKa](https://jeka.dev) can create native Docker images **effortlessly**, from a Spring Boot application. 
+
+We'll also detail how to create a *distrolless* image for running your native applications.
 
 > *Note:* The entire demo can be executed on Windows, macOS or Linux.
 
