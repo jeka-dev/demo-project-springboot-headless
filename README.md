@@ -2,7 +2,7 @@
 
 This repository showcases how [JeKa](https://jeka.dev) can create native Docker images **effortlessly**, from a Spring Boot application. 
 
-We'll also detail how to create a *distrolless* image for running your native applications.
+We'll also detail how to create *distrolless* images (more compact and secured) for running your native applications.
 
 > *Note:* The entire demo can be executed on Windows, macOS or Linux.
 
@@ -116,13 +116,13 @@ It also provides convenient methods - to copy arbitrary files from the host file
 
 ## Conclusion
 
-We created secured native Docker images of our Springboot application in different flavor (Ubuntu and distroless based) and We made it **effortlessly** 🙂 :
+We created secured native Docker images of our Springboot application in different flavor (Ubuntu and distroless based) and we made it **effortlessly** 🙂 :
 
 - We didn’t need to install or configure GraalVM or JDKs.
 - We didn’t need to edit Dockerfiles or any configuration files.
 - The build has been executed on the host (not in a container), making it simpler to troubleshoot.
 
-We can explore more functions using these command lines: `jeka native: --doc`, `jeka docker: --doc`, `jeka springboot: --doc`
+We can explore available functions and settings using commands as: `jeka native: --doc`, `jeka docker: --doc` or `jeka springboot: --doc`
 
 
 
