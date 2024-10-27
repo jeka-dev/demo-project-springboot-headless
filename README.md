@@ -1,8 +1,11 @@
 # Native Spring-Boot Applications with JeKa
 
-This repository showcases how to:
+
+This repository showcases how to use [JeKa](https://jeka.dev) to:
 - Build a Spring Boot application.
 - Effortlessly create different flavors of native Spring Boot Docker images (Ubuntu, distroless).
+
+> *Note:* The entire demo can be executed on Windows, macOS or Linux.
 
 The project follows the standard structure:
 - Code is organized in the *Maven* layout (*src/main/java, ...*).
@@ -23,7 +26,7 @@ jeka project: pack
 ```
 This creates a bootable jar in *jeka-output* dir. 
 
-To run the JAR built in previous step, you can execute
+To run the JAR built in previous step, simply execute
 ```shell
 jeka project: runJar
 ```
@@ -49,20 +52,21 @@ docker run --rm -p 8080:8080 demo-project-springboot-headless:latest
 
 ## Create Native Images
 
-Create an executable file under *jeka-output* dir:
+To create an executable file under *jeka-output* dir, execute:
 ```shell
 jeka native: compile
 ```
 
-Run it:
+To run the created executable file, simply execute:
 ```shell
 jeka -p
 ```
 Fine ! We created a native Spring-Boot application without the need to install or configure anything on the host machine.
+We successfully created a native Spring-Boot application.
 
-## Create Native Docker Images
+## Create Docker Images running a Native Executable
 
-Now, let's create a Docker image of the native application:
+
 ```shell
 jeka docker: buildNative
 ```
@@ -91,11 +95,10 @@ For this, we can add the following lines in *jeka.properties*
 @native.staticLink=MUSL
 @docker.nativeBaseImage=gcr.io/distroless/static-debian12:nonroot
 ```
-Check effect by running:
+Check the result by running:
 ```shell
 jeka docker: infoNative
 ```
-
 We can fine-tune the content of the Docker image using Java code.
 Simply create a KBean class in the jeka-src directory (create the directory if needed) with content like this:
 
@@ -106,9 +109,31 @@ class Build extends KBean {
     public void init() {
         load(DockerKBean.class).customizeNativeImage(steps -> steps
                 .addCopy(aFile, "/etc/myconfig")
+                .insertBefore("USER nonroot", "COPY ....", "RUN ...")
                 .add("RUN ..."));
     }
 }
 ```
-The API allows us to add or insert Docker build instructions at a specific point.
-It also provides convenient methods to copy arbitrary files from the host filesystem to the target image.
+With the API, we can add or insert Docker build instructions at a specific point.
+It also provides convenient methods - to copy arbitrary files from the host filesystem to the target image.
+
+## How Does in Works ?
+
+1. `Springboot KBean` instructs `Native KBean` that ti should rune the spring AOT phase prior compiling.
+2. `Docker KBean` creates a DockerBuild directory containing all information for building the native Image.
+3. `Docker KBean` invokes *Docker* client to execute the build.
+
+
+## Conclusion
+
+We created secured native Docker images of our Springboot application in different flavor (Ubuntu and distroless based).
+We made it effortlessly cause:
+
+- We didn’t need to install or configure GraalVM or JDKs.
+- We didn’t need to edit Dockerfiles or any configuration files.
+- The build has been executed on the host (not in a container), making it simpler to troubleshoot.
+
+We can explore more functions using these command lines: `jeka native: --doc`, `jeka docker: --doc`, `jeka springboot: --doc`
+
+
+
