@@ -3,7 +3,7 @@
 
 This repository showcases how to use [JeKa](https://jeka.dev) to:
 - Build a Spring Boot application.
-- Effortlessly create different flavors of native Spring Boot Docker images (Ubuntu, distroless).
+- Create different flavors of **native Spring Boot Docker images** (Ubuntu, distroless), effortlessly.
 
 > *Note:* The entire demo can be executed on Windows, macOS or Linux.
 
@@ -62,10 +62,8 @@ To run the created executable file, simply execute:
 jeka -p
 ```
 Fine ! We created a native Spring-Boot application without the need to install or configure anything on the host machine.
-We successfully created a native Spring-Boot application.
 
 ## Create Docker Images running a Native Executable
-
 
 ```shell
 jeka docker: buildNative
@@ -117,17 +115,9 @@ class Build extends KBean {
 With the API, we can add or insert Docker build instructions at a specific point.
 It also provides convenient methods - to copy arbitrary files from the host filesystem to the target image.
 
-## How Does in Works ?
-
-1. `Springboot KBean` instructs `Native KBean` that ti should rune the spring AOT phase prior compiling.
-2. `Docker KBean` creates a DockerBuild directory containing all information for building the native Image.
-3. `Docker KBean` invokes *Docker* client to execute the build.
-
-
 ## Conclusion
 
-We created secured native Docker images of our Springboot application in different flavor (Ubuntu and distroless based).
-We made it effortlessly cause:
+We created secured native Docker images of our Springboot application in different flavor (Ubuntu and distroless based) and We made it **effortlessly** 🙂 :
 
 - We didn’t need to install or configure GraalVM or JDKs.
 - We didn’t need to edit Dockerfiles or any configuration files.
