@@ -1,14 +1,20 @@
 # Native Spring-Boot Applications with JeKa
 
-This repository showcases how [JeKa](https://jeka.dev) can create native Docker images **effortlessly**, from a Spring Boot application. 
+This repository showcases how [JeKa](https://jeka-dev.github.io/jeka/) can create native Docker images **effortlessly**, from a Spring Boot application. 
 
 We'll also detail how to create *distrolless* images (more compact and secured) for running your native applications.
 
 > *Note:* The entire demo can be executed on Windows, macOS or Linux.
 
+## Prerequisites
+
+- Nothing to install to build and run: the `./jeka` script downloads JeKa, the JDK and GraalVM.
+  The commands below use `jeka`: use `./jeka` if JeKa is not installed.
+- Docker, for the Docker images.
+
 The project follows the standard structure:
 - Code is organized in the *Maven* layout (*src/main/java, ...*).
-- Java dependencies are declared in [dependencies.txt](./dependencies.txt).
+- Java dependencies are declared in [jeka.project.deps](./jeka.project.deps).
 - The build is configured in [jeka.properties](./jeka.properties) (no code is needed here).
 
 The application serves a simple REST API for managing a list of users, backed by an in-memory database.
@@ -19,9 +25,9 @@ It has been copied from the tutorial [Spring Boot and Angular Web](https://www.b
 
 ## Build the Application
 
-To build application including testing, execute :
+To run the tests and build the application, execute:
 ```shell
-jeka project: pack
+jeka project: test pack
 ```
 This creates a bootable jar in *jeka-output* dir. 
 
@@ -120,9 +126,12 @@ We created secured native Docker images of our Springboot application in differe
 
 - We didn’t need to install or configure GraalVM or JDKs.
 - We didn’t need to edit Dockerfiles or any configuration files.
-- The build has been executed on the host (not in a container), making it simpler to troubleshoot.
+- `jeka native: compile` runs on the host, making it simpler to troubleshoot; `jeka docker: buildNative` compiles inside a container, so the executable targets Linux on any host.
 
-We can explore available functions and settings using commands as: `jeka native: --doc`, `jeka docker: --doc` or `jeka springboot: --doc`
+We can explore available functions and settings using commands as: `jeka native: --doc`, `jeka docker: --doc` or `jeka springboot: --doc`.
 
+## Links
 
-
+- [native KBean](https://jeka-dev.github.io/jeka/reference/kbeans-native/)
+- [docker KBean](https://jeka-dev.github.io/jeka/reference/kbeans-docker/)
+- [Spring Boot plugin](https://github.com/jeka-dev/jeka/tree/master/plugins/plugins.springboot)

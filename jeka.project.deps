@@ -1,0 +1,17 @@
+[version]
+org.springframework.boot:spring-boot-dependencies:4.2.0@pom
+
+[compile]
+org.springframework.boot:spring-boot-starter-webmvc
+org.springframework.boot:spring-boot-starter-data-jpa
+org.springframework.boot:spring-boot-starter-validation
+
+[compile-only]
+org.projectlombok:lombok:1.18.48
+
+[runtime]
+org.springframework.boot:spring-boot-starter-actuator
+com.h2database:h2
+
+[test]
+org.springframework.boot:spring-boot-starter-webmvc-test
