@@ -79,7 +79,7 @@ docker run --rm -p 8080:8080 native-demo-project-springboot-headless:latest
 ```
 We have created a Docker image running the Spring Boot native application.
 
-We can inspect the generated image by visiting [Docker build dir](./jeka-output/docker-build-native-demo-project-springboot-headless#latest), 
+We can inspect the generated image in its Docker build dir, *jeka-output/docker-build-native-demo-project-springboot-headless#latest*, 
 or by executing:
 ```shell
 jeka docker: infoNative
@@ -96,7 +96,7 @@ For this, we can add the following lines in *jeka.properties*
 
 ```properties
 @native.staticLink=MUSL
-@docker.nativeBaseImage=gcr.io/distroless/static-debian12:nonroot
+@docker.nativeBaseImage=gcr.io/distroless/static-debian13:nonroot
 ```
 Check the result by running:
 ```shell
